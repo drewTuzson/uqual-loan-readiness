@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/google-gemini/gemini-cli/main/packages/cli/schemas/gemini-extension.json",
+  "name": "uqual-loan-readiness",
+  "version": "1.0.0",
+  "description": "Deterministic mortgage DTI, home affordability, FHA vs Conventional, state DPA, debt payoff, and Loan Readiness Score 2.0 calculators. Powered by UQUAL.",
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "uqual-loan-readiness": {
+      "httpUrl": "https://uqual.com/mcp"
+    }
+  }
+}

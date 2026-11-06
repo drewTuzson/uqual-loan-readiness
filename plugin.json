@@ -1,0 +1,120 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "uqual-loan-readiness",
+  "version": "1.0.0",
+  "description": "Deterministic mortgage DTI, home affordability, FHA vs Conventional, state DPA, debt payoff, and Loan Readiness Score 2.0 calculators. Powered by UQUAL.",
+  "author": {
+    "name": "UQUAL",
+    "email": "info@uqual.com",
+    "url": "https://uqual.com"
+  },
+  "homepage": "https://uqual.com",
+  "repository": "https://github.com/drewTuzson/uqual-loan-readiness",
+  "license": "MIT",
+  "keywords": [
+    "finance",
+    "mortgage",
+    "dti-calculator",
+    "home-affordability",
+    "fha-vs-conventional",
+    "down-payment-assistance",
+    "debt-payoff",
+    "loan-readiness",
+    "first-time-homebuyer",
+    "uqual"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "UQUAL Loan Readiness",
+        "shortDescription": "Mortgage & DTI calculators",
+        "longDescription": "Deterministic mortgage and loan readiness calculators powered by UQUAL. Calculate front-end and back-end debt-to-income (DTI) ratios against FHA, Conventional, VA, and USDA agency benchmarks; estimate maximum home purchase price and monthly PITI; compare FHA 3.5% down MIP vs Conventional 3% to 20% down PMI over 5 to 30 years; screen state Housing Finance Agency (HFA) down payment assistance programs across all 50 states plus DC; simulate Avalanche, Snowball, and DTI-First debt payoff timelines; and compute an educational Loan Readiness Score 2.0 across Credit, DTI, Assets, and Income Stability. UQUAL is a loan readiness platform, not a traditional credit repair company and not a mortgage lender.",
+        "developerName": "UQUAL",
+        "category": "Finance",
+        "capabilities": [
+          "Mortgage DTI Calculator",
+          "Home Affordability & PITI",
+          "FHA vs Conventional Comparison",
+          "50-State DPA Screening",
+          "Debt Payoff Simulator",
+          "Loan Readiness Score 2.0"
+        ],
+        "websiteURL": "https://uqual.com",
+        "privacyPolicyURL": "https://uqual.com/privacy",
+        "termsOfServiceURL": "https://uqual.com/terms",
+        "supportURL": "https://uqual.com/contact",
+        "defaultPrompt": [
+          "Calculate my mortgage DTI on $8,500 monthly income, $2,400 housing, and $550 other debt",
+          "Compare FHA vs Conventional total 7-year cost on a $385,000 home with a 665 credit score",
+          "Check first-time homebuyer down payment assistance programs in Texas for a $350,000 home"
+        ],
+        "logo": "./assets/logo.png",
+        "logoDark": "./assets/logo-dark.png",
+        "composerIcon": "./assets/icon.png",
+        "composerIconDark": "./assets/icon-dark.png",
+        "brandColor": "#05999E",
+        "brandColorDark": "#14A3A8"
+      },
+      "onboardingSkill": "./skills/uqual-loan-readiness/SKILL.md",
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Borrower asks for front-end and back-end mortgage DTI ratios against agency limits",
+              "prompt": "Calculate my mortgage DTI if my gross monthly income is $8,500, my proposed total housing payment is $2,400, and my other monthly debt is $550.",
+              "tools_triggered": "calculate_mortgage_dti",
+              "expected_behavior": "Calls calculate_mortgage_dti, reports 28.2% front-end and 34.7% back-end DTI, compares against FHA, Conventional, VA, and USDA agency caps, and cites HUD 4000.1 and Fannie Mae B3-6."
+            },
+            {
+              "description": "Borrower asks for maximum affordable purchase price and monthly PITI breakdown",
+              "prompt": "How much house can I afford on $9,200 gross monthly income with $650 in monthly debt, $32,000 in cash savings, and a 680 credit score?",
+              "tools_triggered": "calculate_mortgage_affordability",
+              "expected_behavior": "Calls calculate_mortgage_affordability, identifies whether income or cash is the binding constraint, and breaks down P&I, taxes, homeowners insurance, mortgage insurance, and cash to close."
+            },
+            {
+              "description": "Borrower compares FHA MIP against Conventional PMI over a 7-year horizon",
+              "prompt": "Compare FHA vs Conventional loan costs over 7 years for a $385,000 home with a 665 credit score and 5% available down payment.",
+              "tools_triggered": "compare_fha_vs_conventional",
+              "expected_behavior": "Calls compare_fha_vs_conventional, compares upfront MIP vs Conventional PMI cancellation timing under the Homeowners Protection Act, and reports net economic cost over 5, 7, and 10 years."
+            },
+            {
+              "description": "First-time homebuyer checks state Housing Finance Agency down payment assistance in Texas",
+              "prompt": "Check first-time homebuyer down payment assistance programs in Texas for a $350,000 home with a 650 credit score and $7,500 monthly income.",
+              "tools_triggered": "check_down_payment_assistance",
+              "expected_behavior": "Calls check_down_payment_assistance, checks TDHCA/TSAHC 620 FICO and DTI overlays, compares grant vs 0% deferred second-lien structures, and links the Texas readiness hub."
+            },
+            {
+              "description": "Borrower requests a 4-pillar Loan Readiness Score 2.0 checkup",
+              "prompt": "Evaluate my UQUAL Loan Readiness Score for an FHA loan: 645 middle credit score, $7,800 monthly income, $2,300 target housing payment, $620 monthly debt, $380,000 target home price, and $19,000 liquid savings.",
+              "tools_triggered": "evaluate_loan_readiness_score",
+              "expected_behavior": "Calls evaluate_loan_readiness_score, returns composite 0-100 score across Credit, DTI, Down Payment/Reserves, and Credit Hygiene/Seasoning, and lists prioritized readiness action steps."
+            }
+          ],
+          "negative": [
+            {
+              "description": "User asks for stock picking or cryptocurrency trading execution. Do NOT invoke any UQUAL tool. UQUAL tools only cover residential mortgage readiness, DTI, affordability, FHA vs Conventional comparisons, state DPA, and debt payoff math.",
+              "prompt": "Which semiconductor stocks should I buy before Friday earnings, and place a $5,000 limit order?"
+            },
+            {
+              "description": "User asks to prepare IRS Schedule C depreciation tables. Do NOT invoke any UQUAL tool. Answer using general tax concepts or decline without calling mortgage calculators.",
+              "prompt": "Calculate my 2026 MACRS bonus depreciation schedule for a commercial delivery van."
+            },
+            {
+              "description": "Model has numeric scenario data but user has NOT asked or consented to share contact info. May call calculate_mortgage_dti or simulate_debt_payoff_and_readiness if balances are provided, or ask for debt balances, but MUST NOT call request_uqual_loan_readiness_review because the user has not requested coach outreach or provided explicit consent.",
+              "prompt": "My DTI is 46% on $7,000 monthly income. What debts should I pay down first?"
+            }
+          ]
+        },
+        "commerce": false,
+        "commerce_description": "This plugin provides free educational mortgage readiness calculators and does not sell products or process payments.",
+        "demo_recording_url": "https://uqual.com/videos/uqual-loan-readiness-demo.mp4"
+      },
+      "publication": {
+        "countries": [
+          "US"
+        ],
+        "release_notes": "Initial 1.0.0 release with 7 deterministic mortgage readiness, DTI, affordability, FHA vs Conventional, state DPA, debt payoff, and Loan Readiness Score 2.0 tools."
+      }
+    }
+  }
+}

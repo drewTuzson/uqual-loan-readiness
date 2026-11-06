@@ -1,0 +1,933 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.uqual/loan-readiness",
+  "title": "UQUAL Loan Readiness",
+  "description": "Powered by UQUAL loan readiness tools, educational calculations and agency references.",
+  "version": "1.0.0",
+  "websiteUrl": "https://uqual.com",
+  "icons": [
+    {
+      "src": "https://uqual.com/uqual-logo-plate.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "512x512"
+      ]
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/drewTuzson/uqual-loan-readiness",
+    "source": "github",
+    "id": "1448729093"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://uqual.com/mcp"
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "capabilities": {
+        "tools": [
+          {
+            "name": "calculate_mortgage_dti",
+            "description": "Computes front-end and back-end mortgage debt-to-income (DTI) ratios, student loan agency imputations (Fannie Mae, Freddie Mac, FHA, VA), maximum allowable monthly debt across FHA (31/43 standard, 46.99/56.99 AUS), Conventional (28/36 to 45/50 AUS), VA (41% benchmark), and USDA (29/41), plus...",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "grossMonthlyIncome": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Gross pre-tax monthly qualifying household income in USD (for example 7500)."
+                },
+                "proposedHousingPayment": {
+                  "description": "Optional total monthly proposed PITI + MIP/PMI + HOA housing payment in USD. Used when individual housing components are omitted.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "principalAndInterest": {
+                  "description": "Monthly mortgage principal and interest payment in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "propertyTaxes": {
+                  "description": "Monthly property tax escrow amount in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "homeownersInsurance": {
+                  "description": "Monthly hazard/homeowners insurance amount in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "hoaOrMudDues": {
+                  "description": "Monthly HOA, condo, or MUD dues in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "estimatedPmiOrMip": {
+                  "description": "Monthly private mortgage insurance (PMI) or FHA/USDA annual fee in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "otherMonthlyDebt": {
+                  "description": "Optional combined non-housing monthly debt payments (excluding student loans if studentLoanBalance is provided).",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "creditCardMinimums": {
+                  "description": "Total monthly minimum payments across revolving credit cards in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "autoLoanPayments": {
+                  "description": "Total monthly auto loan or lease payments in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "personalInstallmentLoans": {
+                  "description": "Total monthly personal or installment loan payments in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "alimonyChildSupportOther": {
+                  "description": "Monthly court-ordered support or other recurring credit-report obligations in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "studentLoanBalance": {
+                  "default": 0,
+                  "description": "Total outstanding student loan balance in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "reportedStudentLoanPayment": {
+                  "default": 0,
+                  "description": "Monthly student loan payment shown on credit report or servicer letter in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "studentLoanPlanType": {
+                  "default": "forbearance_deferment",
+                  "type": "string",
+                  "enum": [
+                    "idr_zero",
+                    "idr_positive",
+                    "forbearance_deferment",
+                    "standard_amortizing"
+                  ],
+                  "description": "Repayment status of federal or private student loans."
+                },
+                "selectedStudentLoanAgency": {
+                  "default": "fha",
+                  "type": "string",
+                  "enum": [
+                    "fannieMae",
+                    "freddieMac",
+                    "fha",
+                    "va"
+                  ],
+                  "description": "Agency rule used to impute or accept monthly student loan payment."
+                },
+                "availableLumpSumCash": {
+                  "description": "Optional liquid cash available to test lump-sum debt paydown vs reserve retention in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "debtBalanceToPayOff": {
+                  "description": "Optional target debt balance to eliminate in lump-sum DTI tradeoff simulation in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "monthlyPaymentEliminated": {
+                  "description": "Optional monthly payment eliminated if target debt is paid off in USD.",
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "grossMonthlyIncome"
+              ],
+              "description": "Inputs for deterministic front-end and back-end mortgage DTI calculation across FHA, Conventional, VA, and USDA."
+            }
+          },
+          {
+            "name": "calculate_mortgage_affordability",
+            "description": "Computes maximum affordable home purchase price across FHA, Conventional, VA, and USDA, full PITI + MIP/PMI + HOA breakdown, required cash-to-close, and how +20/+40/+60 credit score gains or monthly debt reduction expand purchasing power.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "grossMonthlyIncome": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Gross pre-tax monthly household income in USD."
+                },
+                "monthlyNonHousingDebt": {
+                  "default": 0,
+                  "description": "Total recurring monthly non-housing debt payments in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "liquidSavings": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Total verifiable liquid cash available for down payment, closing costs, and reserves in USD."
+                },
+                "creditScore": {
+                  "type": "integer",
+                  "minimum": 300,
+                  "maximum": 850,
+                  "description": "Representative middle FICO mortgage credit score (300 to 850)."
+                },
+                "selectedProgram": {
+                  "default": "fha",
+                  "type": "string",
+                  "enum": [
+                    "fha",
+                    "conventional",
+                    "va",
+                    "usda"
+                  ],
+                  "description": "Primary mortgage program to highlight alongside the 4-program comparison."
+                },
+                "dtiMode": {
+                  "default": "standard_43",
+                  "type": "string",
+                  "enum": [
+                    "conservative_36",
+                    "standard_43",
+                    "aus_max_50"
+                  ],
+                  "description": "Underwriting DTI ceiling posture: conservative 36%, standard 43%, or automated underwriting max 50%."
+                },
+                "customDownPaymentPct": {
+                  "description": "Optional custom down payment percentage override (for example 5 or 10).",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 80
+                },
+                "interestRatePct": {
+                  "default": 6.5,
+                  "description": "Annual note interest rate percentage (for example 6.5).",
+                  "type": "number",
+                  "minimum": 1,
+                  "maximum": 18
+                },
+                "loanTermYears": {
+                  "default": 30,
+                  "description": "Mortgage amortization term in years (15 or 30).",
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "const": 15
+                    },
+                    {
+                      "type": "number",
+                      "const": 30
+                    }
+                  ]
+                },
+                "propertyTaxRatePct": {
+                  "default": 1.25,
+                  "description": "Annual property tax rate as percentage of purchase price (for example 1.25, or 2.1 for Texas).",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 6
+                },
+                "monthlyInsurance": {
+                  "default": 175,
+                  "description": "Estimated monthly homeowners insurance premium in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "monthlyHoa": {
+                  "default": 0,
+                  "description": "Estimated monthly HOA dues in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "closingCostPct": {
+                  "default": 3,
+                  "description": "Estimated buyer closing costs as percentage of purchase price.",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10
+                },
+                "sellerConcessionsDollars": {
+                  "default": 0,
+                  "description": "Anticipated seller closing cost credits in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "reserveMonths": {
+                  "default": 1,
+                  "description": "Post-closing PITI reserve months target (0, 1, 3, or 6).",
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "const": 0
+                    },
+                    {
+                      "type": "number",
+                      "const": 1
+                    },
+                    {
+                      "type": "number",
+                      "const": 3
+                    },
+                    {
+                      "type": "number",
+                      "const": 6
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "grossMonthlyIncome",
+                "liquidSavings",
+                "creditScore"
+              ],
+              "description": "Inputs for maximum home purchase price, PITI + MIP/PMI + HOA breakdown, cash-to-close, and credit/debt purchasing power expansion."
+            }
+          },
+          {
+            "name": "compare_fha_vs_conventional",
+            "description": "Compares FHA (3.5% down at 580+, 1.75% UFMIP + annual MIP) against Conventional (3% first-time buyer / 5% standard down at 620+, credit-tiered PMI with 80%/78% LTV cancellation), returning 5-year and 10-year total cost and the exact credit score crossover point.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "homePrice": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Target home purchase price in USD (for example 375000)."
+                },
+                "creditScore": {
+                  "type": "integer",
+                  "minimum": 300,
+                  "maximum": 850,
+                  "description": "Representative middle credit score (300 to 850)."
+                },
+                "isFirstTimeBuyer": {
+                  "default": true,
+                  "description": "Whether buyer qualifies for 3% down first-time/HomeReady/Home Possible Conventional vs 5% standard repeat-buyer minimum.",
+                  "type": "boolean"
+                },
+                "downPaymentMode": {
+                  "default": "min_required",
+                  "type": "string",
+                  "enum": [
+                    "min_required",
+                    "5_both",
+                    "10_both",
+                    "15_both",
+                    "20_both"
+                  ],
+                  "description": "Down payment comparison mode: minimum required (3.5% FHA vs 3% FTHB / 5% repeat Conv) or matched LTV."
+                },
+                "grossMonthlyIncome": {
+                  "default": 8500,
+                  "description": "Gross monthly household income in USD for DTI comparison.",
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                "monthlyNonHousingDebt": {
+                  "default": 650,
+                  "description": "Recurring monthly non-housing debt obligations in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "fhaBaseRatePct": {
+                  "default": 6.25,
+                  "description": "Base 30-year fixed FHA note rate percentage.",
+                  "type": "number",
+                  "minimum": 1,
+                  "maximum": 18
+                },
+                "convBaseRatePct": {
+                  "default": 6.625,
+                  "description": "Par 30-year fixed Conventional note rate percentage before credit-tier LLPA delta.",
+                  "type": "number",
+                  "minimum": 1,
+                  "maximum": 18
+                },
+                "propertyTaxRatePct": {
+                  "default": 1.25,
+                  "description": "Annual property tax rate percentage.",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 6
+                },
+                "monthlyInsurance": {
+                  "default": 165,
+                  "description": "Monthly homeowners insurance premium in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "monthlyHoa": {
+                  "default": 0,
+                  "description": "Monthly HOA dues in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "holdingHorizonYears": {
+                  "default": 7,
+                  "description": "Primary holding horizon in years (5, 7, 10, or 30); 5-year and 10-year totals are always included.",
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "const": 5
+                    },
+                    {
+                      "type": "number",
+                      "const": 7
+                    },
+                    {
+                      "type": "number",
+                      "const": 10
+                    },
+                    {
+                      "type": "number",
+                      "const": 30
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "homePrice",
+                "creditScore"
+              ],
+              "description": "Inputs for side-by-side FHA vs Conventional loan comparison, 5-year and 10-year total cost, PMI cancellation, and exact credit score crossover point."
+            }
+          },
+          {
+            "name": "check_down_payment_assistance",
+            "description": "Evaluates eligibility and estimated assistance amounts for state HFA programs (TX TSAHC/TDHCA, FL Florida Housing/Hometown Heroes, CO CHFA, GA Georgia Dream, NC NCHFA NC Home Advantage and $15,000 NC 1st Home Advantage, plus national baseline FTHB rules).",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "state": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 40,
+                  "description": "US state code or name (deep HFA rules for TX, FL, CO, GA, NC, plus national baseline for any other state)."
+                },
+                "homePrice": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Target home purchase price in USD (for example 360000)."
+                },
+                "creditScore": {
+                  "type": "integer",
+                  "minimum": 300,
+                  "maximum": 850,
+                  "description": "Representative middle credit score (300 to 850)."
+                },
+                "grossMonthlyIncome": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Gross monthly household income in USD."
+                },
+                "monthlyNonHousingDebt": {
+                  "default": 550,
+                  "description": "Monthly recurring non-housing debt payments in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "liquidCashAvailable": {
+                  "default": 9500,
+                  "description": "Current liquid savings available for closing in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "buyerStatus": {
+                  "default": "first_time",
+                  "description": "Buyer status: first_time (no homeownership in past 3 years), workforce_hero (veteran, educator, healthcare, first responder), or repeat_buyer.",
+                  "type": "string",
+                  "enum": [
+                    "first_time",
+                    "workforce_hero",
+                    "repeat_buyer"
+                  ]
+                },
+                "firstMortgageProgram": {
+                  "default": "fha_35",
+                  "description": "Paired first-lien mortgage structure.",
+                  "type": "string",
+                  "enum": [
+                    "fha_35",
+                    "conv_3",
+                    "va_0",
+                    "usda_0"
+                  ]
+                },
+                "secondLienStructure": {
+                  "description": "Optional second-lien repayment structure override (defaults to the state HFA flagship structure).",
+                  "type": "string",
+                  "enum": [
+                    "deferred_silent",
+                    "forgivable_5yr",
+                    "amortizing_2nd",
+                    "outright_grant"
+                  ]
+                }
+              },
+              "required": [
+                "state",
+                "homePrice",
+                "creditScore",
+                "grossMonthlyIncome"
+              ],
+              "description": "Inputs for state HFA down payment assistance eligibility and award estimation (TX TSAHC/TDHCA, FL Hometown Heroes/Florida Housing, CO CHFA, GA Georgia Dream, NC NCHFA, and national baseline)."
+            }
+          },
+          {
+            "name": "simulate_debt_payoff_and_readiness",
+            "description": "Simulates Avalanche vs Snowball vs UQUAL Mortgage-Readiness DTI-First payoff, targeting installment debts near <=10 remaining payments per Fannie/Freddie/FHA exclusion rules and revolving credit cards above 30% and 10% utilization thresholds.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "debts": {
+                  "minItems": 1,
+                  "maxItems": 30,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Unique identifier for this tradeline."
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Display name of the debt (for example Chase Visa or Auto Loan)."
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "credit_card",
+                          "auto_loan",
+                          "student_loan",
+                          "personal_loan",
+                          "medical_other"
+                        ],
+                        "description": "Tradeline category (revolving credit_card vs installment debt)."
+                      },
+                      "balance": {
+                        "type": "number",
+                        "minimum": 0,
+                        "description": "Current unpaid balance in USD."
+                      },
+                      "apr": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 60,
+                        "description": "Annual percentage interest rate (for example 22.99)."
+                      },
+                      "minimumPayment": {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "description": "Required minimum monthly payment in USD."
+                      },
+                      "creditLimit": {
+                        "description": "Credit limit in USD (required for revolving utilization calculations on credit_card accounts).",
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "remainingPaymentsMonths": {
+                        "description": "Optional remaining monthly installment payments (inferred from balance/payment if omitted).",
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 600
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "type",
+                      "balance",
+                      "apr",
+                      "minimumPayment"
+                    ]
+                  },
+                  "description": "List of consumer revolving and installment debts to optimize."
+                },
+                "extraMonthlyPayment": {
+                  "default": 200,
+                  "description": "Extra monthly dollar amount above minimum payments dedicated to debt paydown.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "lumpSumCashAvailable": {
+                  "default": 0,
+                  "description": "Optional one-time Month 1 lump sum available for rapid DTI/utilization paydown in USD.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "grossMonthlyIncome": {
+                  "description": "Optional gross monthly income in USD to calculate exact back-end DTI improvement.",
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                "proposedHousingPayment": {
+                  "description": "Optional proposed monthly housing PITI payment in USD for back-end DTI tracking.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "agencyRule": {
+                  "default": "fannie_freddie",
+                  "description": "Underwriting rule set for <=10 remaining installment payment exclusions.",
+                  "type": "string",
+                  "enum": [
+                    "fannie_freddie",
+                    "fha",
+                    "va"
+                  ]
+                }
+              },
+              "required": [
+                "debts"
+              ],
+              "description": "Inputs for Avalanche vs Snowball vs Mortgage-Readiness DTI-First debt payoff and utilization simulation."
+            }
+          },
+          {
+            "name": "evaluate_loan_readiness_score",
+            "description": "Computes UQUAL's 4-Pillar Loan Readiness Score (0 to 100) across Credit Middle Score, DTI, Down Payment/Reserves, and Credit Hygiene/Seasoning with compensability cap diagnostics, multi-program alignment, and prioritized counterfactual action steps.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "creditMiddleScore": {
+                  "type": "integer",
+                  "minimum": 300,
+                  "maximum": 850,
+                  "description": "Representative middle credit score (300 to 850)."
+                },
+                "revolvingUtilizationPct": {
+                  "default": 25,
+                  "description": "Aggregate revolving credit card utilization percentage (0 to 150).",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 150
+                },
+                "grossMonthlyIncome": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Gross monthly qualifying income in USD."
+                },
+                "monthlyNonHousingDebt": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Recurring monthly non-housing debt obligations in USD."
+                },
+                "targetHomePrice": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Target home purchase price in USD."
+                },
+                "proposedHousingPayment": {
+                  "description": "Optional proposed monthly PITI housing payment in USD (auto-calculated from targetHomePrice if omitted).",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "liquidAssetsUsd": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Total verifiable liquid savings/checking/reserve assets in USD."
+                },
+                "plannedDownPaymentPct": {
+                  "default": 3.5,
+                  "description": "Planned down payment percentage of purchase price (for example 3.5 for FHA or 5 for Conventional).",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 80
+                },
+                "dpaAssistanceUsd": {
+                  "default": 0,
+                  "description": "Optional estimated Down Payment Assistance (DPA) in USD applied toward cash-to-close.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "employmentMonths": {
+                  "default": 24,
+                  "description": "Months of continuous verifiable W-2 or documented self-employed income history.",
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 600
+                },
+                "latePaymentsLast12Months": {
+                  "default": 0,
+                  "description": "Count of 30+ day late credit report payments in the past 12 months.",
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 24
+                },
+                "monthsSinceMajorDerogatory": {
+                  "default": null,
+                  "description": "Months elapsed since bankruptcy discharge, foreclosure, or short sale (null if none).",
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 240
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "hardInquiriesLast90Days": {
+                  "default": 0,
+                  "description": "Non-mortgage hard credit inquiries in the last 90 days.",
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 20
+                },
+                "documentsReadyCount": {
+                  "default": 3,
+                  "description": "Number of core underwriting document packets ready (0 to 4: 2yr tax returns, 2yr W-2/1099, 30d pay stubs, 2mo bank statements).",
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4
+                },
+                "targetProgram": {
+                  "default": "best_fit",
+                  "description": "Target loan program benchmark or best_fit auto-selection.",
+                  "type": "string",
+                  "enum": [
+                    "best_fit",
+                    "fha-purchase",
+                    "conforming-purchase",
+                    "homeready",
+                    "home-possible",
+                    "va-purchase",
+                    "usda-purchase"
+                  ]
+                },
+                "vaEligible": {
+                  "default": false,
+                  "description": "Whether borrower has eligible military/veteran service for VA home loan review.",
+                  "type": "boolean"
+                },
+                "usdaRuralEligible": {
+                  "default": false,
+                  "description": "Whether target property area is eligible under USDA Rural Development guidelines.",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "creditMiddleScore",
+                "grossMonthlyIncome",
+                "monthlyNonHousingDebt",
+                "targetHomePrice",
+                "liquidAssetsUsd"
+              ],
+              "description": "Inputs for UQUAL 4-Pillar Loan Readiness Score 2.0 (0-100) across Credit Middle Score, DTI, Down Payment/Reserves, and Credit Hygiene/Seasoning."
+            }
+          },
+          {
+            "name": "request_uqual_loan_readiness_review",
+            "description": "Opt-in lead handoff tool invoked ONLY when the user explicitly consents to share contact details for a personalized UQUAL Loan Readiness Coach review via uqual.com/api/seo-leads.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "explicitUserConsent": {
+                  "type": "boolean",
+                  "description": "MUST be true ONLY after the user explicitly asks or consents to share their contact information with a UQUAL Loan Readiness Coach."
+                },
+                "name": {
+                  "description": "Borrower full name (required when explicitUserConsent is true; omit when false).",
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 120
+                },
+                "email": {
+                  "description": "Borrower email address (required when explicitUserConsent is true; omit when false).",
+                  "type": "string",
+                  "maxLength": 254,
+                  "format": "email",
+                  "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                },
+                "phone": {
+                  "description": "Borrower 10+ digit phone number for coach follow-up (required when explicitUserConsent is true; omit when false).",
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 40,
+                  "pattern": "^(?:\\D*\\d){10,}\\D*$"
+                },
+                "state": {
+                  "description": "Optional US state where the borrower plans to purchase.",
+                  "type": "string",
+                  "maxLength": 40
+                },
+                "goalSummary": {
+                  "description": "Optional short summary of purchase timeline, target home price, or primary readiness blocker.",
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "readinessScore": {
+                  "description": "Optional 0-100 readiness score from a prior calculation in this conversation.",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "readinessTier": {
+                  "description": "Optional readiness tier label from a prior calculation.",
+                  "type": "string",
+                  "maxLength": 120
+                },
+                "primaryBottleneck": {
+                  "description": "Optional primary bottleneck summary.",
+                  "type": "string",
+                  "maxLength": 120
+                },
+                "pillarScores": {
+                  "description": "Optional map of normalized 0-100 pillar scores.",
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100
+                  }
+                },
+                "dryRun": {
+                  "default": false,
+                  "description": "Set true for local testing or schema dry-runs so no live external request is sent to uqual.com/api/seo-leads.",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "explicitUserConsent"
+              ],
+              "description": "Opt-in lead handoff tool to request a personalized 1-on-1 UQUAL Loan Readiness Coach review via uqual.com/api/seo-leads."
+            }
+          }
+        ],
+        "resources": [
+          {
+            "uri": "uqual://guides/mortgage-readiness-overview",
+            "name": "UQUAL 4-Pillar Mortgage Readiness Overview",
+            "description": "Comprehensive guide to Credit Middle Score, Front-End/Back-End DTI, Down Payment/Reserves, and Credit Hygiene/Seasoning benchmarks.",
+            "mimeType": "text/markdown"
+          },
+          {
+            "uri": "uqual://guides/state-dpa-programs",
+            "name": "State HFA Down Payment Assistance Guide (TX, FL, CO, GA, NC)",
+            "description": "Authoritative state Housing Finance Agency rules, FICO overlays, DTI caps, and second-lien structures for TX, FL, CO, GA, NC, and national programs.",
+            "mimeType": "text/markdown"
+          },
+          {
+            "uri": "uqual://guides/fha-vs-conventional",
+            "name": "FHA vs Conventional Underwriting & Crossover Guide",
+            "description": "Side-by-side underwriting reference comparing HUD 4000.1 FHA loans with Fannie Mae DU and Freddie Mac LPA Conventional loans.",
+            "mimeType": "text/markdown"
+          }
+        ],
+        "prompts": [
+          {
+            "name": "mortgage-readiness-checkup",
+            "description": "Runs the UQUAL Loan Readiness Score 2.0, purchasing power, and optional state down payment assistance check, then synthesizes a 4-pillar readiness plan with Powered by UQUAL citations and deep links.",
+            "arguments": [
+              {
+                "name": "creditScore",
+                "description": "Representative middle credit score (300 to 850).",
+                "required": true
+              },
+              {
+                "name": "grossMonthlyIncome",
+                "description": "Gross pre-tax monthly household income in USD.",
+                "required": true
+              },
+              {
+                "name": "monthlyDebt",
+                "description": "Recurring monthly non-housing debt payments in USD.",
+                "required": true
+              },
+              {
+                "name": "targetHomePrice",
+                "description": "Target home purchase price in USD.",
+                "required": true
+              },
+              {
+                "name": "liquidSavings",
+                "description": "Verifiable liquid savings available for down payment, closing costs, and reserves in USD.",
+                "required": true
+              },
+              {
+                "name": "state",
+                "description": "Optional US state code or name for down payment assistance lookup (for example TX or NC).",
+                "required": false
+              }
+            ]
+          },
+          {
+            "name": "dti-rescue-plan",
+            "description": "Calculates current mortgage DTI, then simulates Avalanche, Snowball, and UQUAL DTI-First payoff strategies to find the fastest path under agency DTI limits.",
+            "arguments": [
+              {
+                "name": "grossMonthlyIncome",
+                "description": "Gross pre-tax monthly household income in USD.",
+                "required": true
+              },
+              {
+                "name": "proposedHousingPayment",
+                "description": "Proposed monthly PITI plus MIP/PMI plus HOA housing payment in USD.",
+                "required": false
+              },
+              {
+                "name": "monthlyDebtSummary",
+                "description": "Plain-language list of each debt with balance, APR, minimum payment, credit limit (cards), and remaining payments (installment loans).",
+                "required": true
+              },
+              {
+                "name": "extraMonthlyBudget",
+                "description": "Extra monthly dollars available above minimum payments.",
+                "required": false
+              },
+              {
+                "name": "lumpSumCash",
+                "description": "One-time lump sum cash available for paydown in USD.",
+                "required": false
+              }
+            ]
+          },
+          {
+            "name": "first-time-buyer-dpa-finder",
+            "description": "Reads the UQUAL state DPA guide, checks state HFA down payment assistance eligibility, and compares FHA versus Conventional to surface cash-to-close savings and the credit score crossover point.",
+            "arguments": [
+              {
+                "name": "state",
+                "description": "US state code or name where the buyer plans to purchase (for example TX, FL, CO, GA, or NC).",
+                "required": true
+              },
+              {
+                "name": "homePrice",
+                "description": "Target home purchase price in USD.",
+                "required": true
+              },
+              {
+                "name": "creditScore",
+                "description": "Representative middle credit score (300 to 850).",
+                "required": true
+              },
+              {
+                "name": "grossMonthlyIncome",
+                "description": "Gross pre-tax monthly household income in USD.",
+                "required": true
+              },
+              {
+                "name": "buyerStatus",
+                "description": "first_time, workforce_hero, or repeat_buyer.",
+                "required": false
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

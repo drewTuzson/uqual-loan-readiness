@@ -1,0 +1,34 @@
+{
+  "name": "uqual-loan-readiness",
+  "displayName": "UQUAL Loan Readiness",
+  "version": "1.0.0",
+  "description": "Deterministic mortgage DTI, home affordability, FHA vs Conventional, state DPA, debt payoff, and Loan Readiness Score 2.0 calculators. Powered by UQUAL.",
+  "author": {
+    "name": "UQUAL",
+    "email": "info@uqual.com",
+    "url": "https://uqual.com"
+  },
+  "icon": "./assets/logo.png",
+  "homepage": "https://uqual.com",
+  "repository": "https://github.com/drewTuzson/uqual-loan-readiness",
+  "documentationUrl": "https://uqual.com/plugins/playground",
+  "supportUrl": "https://uqual.com/contact",
+  "privacyPolicyUrl": "https://uqual.com/privacy",
+  "termsOfServiceUrl": "https://uqual.com/terms",
+  "license": "MIT",
+  "category": "Finance",
+  "keywords": [
+    "finance",
+    "mortgage",
+    "dti-calculator",
+    "home-affordability",
+    "fha-vs-conventional",
+    "down-payment-assistance",
+    "debt-payoff",
+    "loan-readiness",
+    "first-time-homebuyer",
+    "uqual"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}
