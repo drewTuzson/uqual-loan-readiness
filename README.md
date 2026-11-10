@@ -1,6 +1,6 @@
 # UQUAL Loan Readiness Plugin (Universal 2026 Package)
 
-[![M8ven Score](https://m8ven.ai/badge/mcp/drewtuzson/uqual-loan-readiness?variant=verified)](https://m8ven.ai/mcp/drewtuzson/uqual-loan-readiness?s=readme)
+[![M8ven Score](https://m8ven.ai/badge/mcp/drewtuzson-uqual-loan-readiness-9ej563?v=b4240f351cfd249d686011d34f5d77ce)](https://m8ven.ai/mcp/drewtuzson-uqual-loan-readiness-9ej563?s=readme)
 
 UQUAL is a loan readiness platform that helps prospective homebuyers optimize credit, debt-to-income (DTI), and down payment readiness. UQUAL is not a traditional credit repair company and is not a licensed mortgage lender.
 
